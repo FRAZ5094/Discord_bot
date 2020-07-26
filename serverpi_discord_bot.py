@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands,tasks
 from secrets import discord_bot_token
-import time
+from twitch_notifications import *
 
 client = commands.Bot(command_prefix="!")
 #use client. because client is used
@@ -34,8 +34,7 @@ async def ping(ctx):
 
 @tasks.loop(seconds=2)
 async def streamer_live_check():
-    await dm()
-    time.sleep(10)
+    pass
 #ch = client.get_channel(736949877237612544)
 #await ch.send("xQcOW is live\nTitle: Fucking your mom")
 
@@ -49,5 +48,19 @@ async def dm():
 async def channel(channel_id,message):
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
+
+
+@client.command()
+async def sub_list(ctx):
+    user_id=ctx.author.id
+    subs=read_json()
+    streamers=all_streamers_in_json()
+    subbed_to_streamer=[]
+    for streamer in streamers:
+        if user_id in subs[streamer]:
+            subbed_to_streamer.append(streamer)
+    print(subbed_to_streamer)
+    await ctx.send(str(subbed_to_streamer))
+
 
 client.run(discord_bot_token)
