@@ -1,0 +1,11 @@
+{
+    "xQcOW": {
+        "timeout": 60
+    },
+    "LIRIK": {
+        "timeout": 10
+    },
+    "Moxy": {
+        "timeout": 60
+    }
+}
