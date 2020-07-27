@@ -52,14 +52,50 @@ async def channel(channel_id,message):
 @client.command()
 async def sub_list(ctx):
     user_id=ctx.author.id
-    subs=read_json()
-    streamers=all_streamers_in_json()
-    subbed_to_streamer=[]
-    for streamer in streamers:
-        if user_id in subs[streamer]:
-            subbed_to_streamer.append(streamer)
-    print(subbed_to_streamer)
-    await ctx.send(str(subbed_to_streamer))
+    subbed_list=get_subbed_list(user_id)
+    await ctx.send(subbed_list)
 
+@client.command()
+async def add_streamer(ctx,streamer):
+    user_id=ctx.author.id
+    subs=read_json()
+    all_streamers=list(subs.keys())
+    streamer=get_correct_user_name(streamer)
+    if streamer=="not a valid user name":
+        await ctx.send("not a valid user name, try again")
+    else:
+        if streamer in all_streamers:
+            if user_id in subs[streamer]["subs"]:
+                await ctx.send(f"You are already subscibed to {streamer}")
+            else:
+                subs[streamer]["subs"].append(user_id)
+                await ctx.send(f"Successfully subscribed to {streamer}")
+                write_to_json(subs)
+                subbed_list=get_subbed_list(user_id)
+                await ctx.send(subbed_list)
+                
+        else:
+            subs[streamer]={"subs": [user_id],"timeout_until": 0}
+            await ctx.send(f"Successfully subscribed to {streamer}")
+            write_to_json(subs)
+            subbed_list=get_subbed_list(user_id)
+            await ctx.send(subbed_list)
+
+@client.command()
+async def remove_streamer(ctx,streamer):
+    subs=read_json()
+    user_id=ctx.author.id
+    if streamer in subs.keys():
+        if user_id in subs[streamer]["subs"]:
+            subs[streamer]["subs"].remove(user_id)
+            await ctx.send(f"{streamer} removed from your subbed list")
+            write_to_json(subs)
+            subbed_list=get_subbed_list(user_id)
+            await ctx.send(subbed_list)
+        else:
+            await ctx.send(f"You are not subbed to {streamer}")
+
+    else:
+        await ctx.send("invalid streamer name, this command is case sensitive")
 
 client.run(discord_bot_token)

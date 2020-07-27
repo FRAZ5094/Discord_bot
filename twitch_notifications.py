@@ -4,14 +4,14 @@ import os
 json_file_name="streamers.json"
 
 #145272316778119170
-
+"""
 subs={
     "TimTheTatman":{"subs":[145272316778119170],"timeout_until":0},
-    "Faker":{"subs":[145272316778119170],"timeout_until":0},
+    "Faker":{"subs":[1],"timeout_until":0},
     "HealthyGamer_GG":{"subs":[145272316778119170],"timeout_until":0},
     "GMHikaru":{"subs":[145272316778119170],"timeout_until":0}
 }
-
+"""
 
 async def twitch_streamer_notifications(client):
     all_streamers=all_streamers_in_json()
@@ -87,9 +87,12 @@ def remove_id_from_streamer(id,streamer):
     subs=read_json()
 
 def read_json():
-    with open(json_file_name,"r") as f:
-        subs=json.load(f)
-    return subs
+    if os.path.exists(json_file_name):
+        with open(json_file_name,"r") as f:
+            subs=json.load(f)
+        return subs
+    else:
+        return {}
 
 
 def write_to_json(to_write):
@@ -101,5 +104,43 @@ async def dm(client,message,send_to):
         target= await client.fetch_user(recipient)
         await target.send(message)
 
+def get_correct_user_name(streamer):
+    payload={
+        "login":streamer
+    }
 
-write_to_json(subs)
+    header=get_header()
+
+    r=requests.get("https://api.twitch.tv/helix/users",params=payload,headers=header)
+
+    if r.ok:
+        print("request ok")
+        data=json.loads(r.text)["data"]
+        if len(data)>0: 
+            display_name=data[0]["display_name"]
+            return display_name
+        else:
+            return "not a valid user name"
+       
+    else:
+        if r.status_code==400:
+            return "not a valid user name"
+        elif r.status_code==401:
+            print("request error,getting new key")
+            header=get_header(expired=True)
+            messages=get_correct_user_name(streamer)
+            return messages
+
+def get_subbed_list(user_id):
+    subs=read_json()
+    user_subbed_list=[]
+    for streamer in list(subs.keys()):
+        if user_id in subs[streamer]["subs"]:
+            user_subbed_list.append(streamer)
+    if len(user_subbed_list)==0:
+        return "You're not subbed to any streamers"
+    return "Your subscribed list:\n   "+"\n   ".join(user_subbed_list)
+
+
+
+#write_to_json(subs)
