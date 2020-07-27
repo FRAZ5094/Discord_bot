@@ -101,7 +101,7 @@ async def remove_streamer(ctx,streamer):
 @client.command()
 async def pi_temp(ctx):
         temp=os.popen("vcgencmd measure_temp").read()
-        await ctx.send(f"pi temp: {temp}C")
+        await ctx.send(f"pi {temp}")
 
 client.run(discord_bot_token)
 
