@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands,tasks
 from secrets import discord_bot_token
 from twitch_notifications import *
+import os 
 
 client = commands.Bot(command_prefix="!")
 
@@ -96,6 +97,11 @@ async def remove_streamer(ctx,streamer):
 
     else:
         await ctx.send("invalid streamer name, this command is case sensitive")
+
+@client.command()
+async def pi_temp(ctx):
+        temp=os.popen("vcgencmd measure_temp").read()
+        ctx.send(f"pi temp: {temp}C")
 
 client.run(discord_bot_token)
 
