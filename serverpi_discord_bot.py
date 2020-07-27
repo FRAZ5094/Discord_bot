@@ -22,7 +22,7 @@ async def clear(ctx,amount):
         await ctx.channel.purge(limit=999999)
     await ctx.channel.purge(limit=int(amount)+1)
 
-@clear.error #only for an error with the "clear" function
+@clear.error
 async def clear_error(ctx,error):
     if isinstance(error,commands.MissingRequiredArgument):
         await ctx.send("Please specify and amount of messages to delete")

@@ -68,7 +68,6 @@ def get_streams(channel_id_list):
 
     r=requests.get("https://api.twitch.tv/helix/streams",params=payload,headers=header)
     if r.ok:
-        #("request ok")
         data=json.loads(r.text)["data"]
         messages={}
         for stream in data:
@@ -110,7 +109,6 @@ def get_correct_user_name(streamer):
     r=requests.get("https://api.twitch.tv/helix/users",params=payload,headers=header)
 
     if r.ok:
-        print("request ok")
         data=json.loads(r.text)["data"]
         if len(data)>0: 
             display_name=data[0]["display_name"]
