@@ -39,9 +39,8 @@ async def streamer_live_check():
 #await ch.send("xQcOW is live\nTitle: Fucking your mom")
 
 @client.command()
-async def dm():
-    target=await client.fetch_user(145272316778119170)
-    await target.send("Bruh")
+async def notifications(ctx):
+    await twitch_streamer_notifications(client)
 
 
 @client.command()

@@ -1,14 +1,26 @@
 {
-    "xqcow": [
-        1,
-        2,
-        3,
-        145272316778119170
-    ],
-    "lirik": [
-        3,
-        4,
-        5,
-        145272316778119170
-    ]
+    "TimTheTatman": {
+        "subs": [
+            145272316778119170
+        ],
+        "timeout_until": 0
+    },
+    "Faker": {
+        "subs": [
+            145272316778119170
+        ],
+        "timeout_until": 0
+    },
+    "HealthyGamer_GG": {
+        "subs": [
+            145272316778119170
+        ],
+        "timeout_until": 0
+    },
+    "GMHikaru": {
+        "subs": [
+            145272316778119170
+        ],
+        "timeout_until": 0
+    }
 }

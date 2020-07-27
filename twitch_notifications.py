@@ -1,65 +1,86 @@
 import json
 import requests
-
+import os
 json_file_name="streamers.json"
-"""
-with open("streamers.json","r") as f:
-    streamers=json.load(f)
-"""
+
+#145272316778119170
+
 subs={
-    "xqcow":[1,2,3,145272316778119170],
-    "lirik":[3,4,5,145272316778119170]
-    }
+    "TimTheTatman":{"subs":[145272316778119170],"timeout_until":0},
+    "Faker":{"subs":[145272316778119170],"timeout_until":0},
+    "HealthyGamer_GG":{"subs":[145272316778119170],"timeout_until":0},
+    "GMHikaru":{"subs":[145272316778119170],"timeout_until":0}
+}
 
 
+async def twitch_streamer_notifications(client):
+    all_streamers=all_streamers_in_json()
+    subs=read_json()
+    messages=get_streams(all_streamers)
 
-def twitch_streamer_notifications():
- 
-    streamer_names=all_streamers_in_json() #list of all streamers registered in the json
+    online_streamers=list(messages.keys())
+    print(f"online streamers:{online_streamers}")
+    for streamer in online_streamers:
+        message=messages[streamer]
+        send_to=subs[streamer]["subs"]
+        await dm(client,message,send_to)
+        print(f"sent for {streamer}")
 
-    header=get_header() #gets auth token from twitch api and creates a header
-    
-    for streamer in streamer_names:
-        is_live,message=get_stream_details(streamer,header)
-        print(is_live)
-        if is_live:
-            for sub in subs[streamer]:
-                print("message {} with \"{}\"".format(sub,message))
             
 def all_streamers_in_json():
     subs=read_json()
     streamer_names=list(subs.keys())
     return streamer_names
 
-def get_header():
-    from secrets import client_id,secret_id
+def get_header(expired=False):
+
+    if os.path.exists("header.json") and not expired:
+        with open("header.json","r") as f:
+            header=json.load(f)
+            return header
+    else:
+        from secrets import client_id,secret_id
+        payload={
+            "client_id":client_id,
+            "client_secret":secret_id,
+            "grant_type":"client_credentials"}
+
+        r=requests.post("https://id.twitch.tv/oauth2/token", data=payload)
+
+        AuthData=json.loads(r.text)
+
+        access_token=AuthData["access_token"]
+
+        header={"client-id":client_id,"Authorization": f"Bearer {access_token}"}
+
+        with open("header.json","w") as f:
+            json.dump(header,f,indent=4)
+
+        return header
+
+def get_streams(channel_id_list):
+
     payload={
-        "client_id":client_id,
-        "client_secret":secret_id,
-        "grant_type":"client_credentials"}
+        "user_login":channel_id_list
+    }
 
-    r=requests.post("https://id.twitch.tv/oauth2/token", data=payload)
+    header=get_header()
 
-    AuthData=json.loads(r.text)
-
-    access_token=AuthData["access_token"]
-
-    header={"client-id":client_id,"Authorization": "Bearer {}".format(access_token)}
-
-    return header
-
-def get_stream_details(streamer,header):
-    payload={"query":streamer,"live_only": True}
-
-    r=requests.get("https://api.twitch.tv/helix/search/channels",params=payload,headers=header)
-    data=json.loads(r.text)["data"]
-    for result in data:
-        if result["display_name"]==streamer:
-            display_name=result["display_name"]
-            title=result["title"]
-            return True,"{0} is live!\nTitle: {1}\nLink: https://www.twitch.tv/{0}".format(display_name,title)
-
-    return False," "
+    r=requests.get("https://api.twitch.tv/helix/streams",params=payload,headers=header)
+    if r.ok:
+        print("request ok")
+        data=json.loads(r.text)["data"]
+        messages={}
+        for stream in data:
+            user_name=stream["user_name"]
+            title=stream["title"]
+            messages[user_name]=f"{user_name} is live!\nTitle: {title}\nLink: https://www.twitch.tv./{user_name}"
+    else:  
+        print("request error,getting new key")
+        header=get_header(expired=True)
+        messages=get_streams(channel_id_list)
+        return messages
+    return messages
 
 
 def remove_id_from_streamer(id,streamer):
@@ -74,5 +95,11 @@ def read_json():
 def write_to_json(to_write):
     with open(json_file_name,"w") as f:
         json.dump(to_write,f,indent=4)
+
+async def dm(client,message,send_to):
+    for recipient in send_to:
+        target= await client.fetch_user(recipient)
+        await target.send(message)
+
 
 write_to_json(subs)
