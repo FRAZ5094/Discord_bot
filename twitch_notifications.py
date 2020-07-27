@@ -19,12 +19,12 @@ async def twitch_streamer_notifications(client):
     messages=get_streams(all_streamers)
 
     online_streamers=list(messages.keys())
-    print(f"online streamers:{online_streamers}")
+    #print(f"online streamers:{online_streamers}")
     for streamer in online_streamers:
         message=messages[streamer]
         send_to=subs[streamer]["subs"]
         await dm(client,message,send_to)
-        print(f"sent for {streamer}")
+        #print(f"sent for {streamer}")
 
             
 def all_streamers_in_json():
@@ -68,7 +68,7 @@ def get_streams(channel_id_list):
 
     r=requests.get("https://api.twitch.tv/helix/streams",params=payload,headers=header)
     if r.ok:
-        print("request ok")
+        #("request ok")
         data=json.loads(r.text)["data"]
         messages={}
         for stream in data:
@@ -81,10 +81,6 @@ def get_streams(channel_id_list):
         messages=get_streams(channel_id_list)
         return messages
     return messages
-
-
-def remove_id_from_streamer(id,streamer):
-    subs=read_json()
 
 def read_json():
     if os.path.exists(json_file_name):
