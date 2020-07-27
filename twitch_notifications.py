@@ -1,8 +1,9 @@
 import json
 import requests
 import os
+import time
 json_file_name="streamers.json"
-
+default_streamer_timeout=43200
 #145272316778119170
 """
 subs={
@@ -14,9 +15,14 @@ subs={
 """
 
 async def twitch_streamer_notifications(client):
-    all_streamers=all_streamers_in_json()
+    streamers_to_check=get_streamers_to_check()
+    print(f"streamers to check :{streamers_to_check}")
+    if len(streamers_to_check)==0:
+        print("no streamers to check")
+        return
+
     subs=read_json()
-    messages=get_streams(all_streamers)
+    messages=get_streams(streamers_to_check)
 
     online_streamers=list(messages.keys())
     #print(f"online streamers:{online_streamers}")
@@ -24,13 +30,16 @@ async def twitch_streamer_notifications(client):
         message=messages[streamer]
         send_to=subs[streamer]["subs"]
         await dm(client,message,send_to)
-        #print(f"sent for {streamer}")
-
-            
-def all_streamers_in_json():
+        timeout_streamer(streamer)
+         
+def get_streamers_to_check():
     subs=read_json()
-    streamer_names=list(subs.keys())
-    return streamer_names
+    streamers_to_check=[]
+    epoch=int(time.time())
+    for streamer in subs.keys():
+        if subs[streamer]["timeout_until"]<=epoch:
+            streamers_to_check.append(streamer)
+    return streamers_to_check
 
 def get_header(expired=False):
 
@@ -89,7 +98,6 @@ def read_json():
     else:
         return {}
 
-
 def write_to_json(to_write):
     with open(json_file_name,"w") as f:
         json.dump(to_write,f,indent=4)
@@ -135,6 +143,9 @@ def get_subbed_list(user_id):
         return "You're not subbed to any streamers"
     return "Your subscribed list:\n   "+"\n   ".join(user_subbed_list)
 
-
-
-#write_to_json(subs)
+def timeout_streamer(streamer):
+    subs=read_json()
+    epoch=int(time.time())
+    subs[streamer]["timeout_until"]=epoch+default_streamer_timeout
+    write_to_json(subs)
+    

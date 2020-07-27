@@ -8,7 +8,7 @@ client = commands.Bot(command_prefix="!")
 
 @client.event
 async def on_ready():
-    #streamer_live_check.start()
+    streamer_live_check.start()
     await client.change_presence(status=discord.Status.idle,activity=discord.Game("Fucking your mum"))
     print("serverpi_discord_bot online")
 
@@ -26,22 +26,31 @@ async def clear(ctx,amount):
 async def clear_error(ctx,error):
     if isinstance(error,commands.MissingRequiredArgument):
         await ctx.send("Please specify and amount of messages to delete")
-       
+
+
+@client.event
+async def on_command_error(ctx,error):
+    if isinstance(error,commands.CommandNotFound):
+        await ctx.send("Command doesn't exist")
+
+
 
 @client.command()
 async def ping(ctx):
     await ctx.send("{}ms".format(round(client.latency*1000)))
 
 
-@tasks.loop(seconds=2)
+@tasks.loop(minutes=10)
 async def streamer_live_check():
-    pass
-
-
+    print("doing loop")
+    await twitch_streamer_notifications(client)
+    temp=os.popen("vcgencmd measure_temp").read()
+    print(temp)
+"""
 @client.command()
 async def notifications(ctx):
     await twitch_streamer_notifications(client)
-
+"""
 
 @client.command()
 async def channel(channel_id,message):
@@ -102,6 +111,7 @@ async def remove_streamer(ctx,streamer):
 async def pi_temp(ctx):
         temp=os.popen("vcgencmd measure_temp").read()
         await ctx.send(f"pi {temp}")
+
 
 client.run(discord_bot_token)
 
