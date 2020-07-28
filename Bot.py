@@ -79,6 +79,7 @@ async def sub_list(ctx):
     subbed_list=get_subbed_list(user_id)
     if len(subbed_list)==0:
         await ctx.send("Your not subbed to anyone")
+        return
     await ctx.send("Your subscribed list:\n   "+"\n   ".join(subbed_list))
 
 @client.command()
