@@ -8,9 +8,9 @@ client = commands.Bot(command_prefix="!")
 
 @client.event
 async def on_ready():
-    #streamer_live_check.start()
+    streamer_live_check.start()
     await client.change_presence(status=discord.Status.idle,activity=discord.Game("Fucking your mum"))
-    print("serverpi_discord_bot online")
+    print("Bot online")
 
 @client.command()
 async def hello(ctx):
@@ -36,14 +36,12 @@ async def on_command_error(ctx,error):
 async def ping(ctx):
     await ctx.send("{}ms".format(round(client.latency*1000)))
 
-
 @tasks.loop(minutes=5)
 async def streamer_live_check():
     messages=await twitch_streamer_notifications()
     for message,user_ids in messages.items():
         for user_id in user_ids:
             await dm(user_id,message)
-
 
 @client.command()
 async def check_online(ctx):
@@ -58,8 +56,6 @@ async def check_online(ctx):
 
     for streamer in online_list:
         message+=f":white_check_mark: {streamer}\n"
-        #f"https://www.twitch.tv/{streamer.lower()}\n"
-
 
     for streamer in offline_list:
         message+=f":x: {streamer}\n"
@@ -73,7 +69,6 @@ async def channel(channel_id,message):
 async def dm(user_id,message):
         target= await client.fetch_user(user_id)
         await target.send(message)
-
 
 @client.command()
 async def sub_list(ctx):
@@ -130,7 +125,6 @@ async def remove_streamer(ctx,streamer):
 async def pi_temp(ctx):
         temp=os.popen("vcgencmd measure_temp").read()
         await ctx.send(f"pi {temp}")
-
 
 client.run(discord_bot_token)
 
