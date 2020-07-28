@@ -27,34 +27,37 @@ async def clear_error(ctx,error):
     if isinstance(error,commands.MissingRequiredArgument):
         await ctx.send("Please specify and amount of messages to delete")
 
-
 @client.event
 async def on_command_error(ctx,error):
     if isinstance(error,commands.CommandNotFound):
         await ctx.send("Command doesn't exist")
-
-
 
 @client.command()
 async def ping(ctx):
     await ctx.send("{}ms".format(round(client.latency*1000)))
 
 
-@tasks.loop(minutes=10)
+@tasks.loop(minutes=5)
 async def streamer_live_check():
-    print("doing loop")
-    await twitch_streamer_notifications(client)
+    messages=await twitch_streamer_notifications()
+    for message,user_ids in messages.items():
+        for user_id in user_ids:
+            await dm(user_id,message)
 
-"""
+
 @client.command()
-async def notifications(ctx):
-    await twitch_streamer_notifications(client)
-"""
+async def check_online(ctx):
+    pass
+
 
 @client.command()
 async def channel(channel_id,message):
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
+
+async def dm(user_id,message):
+        target= await client.fetch_user(user_id)
+        await target.send(message)
 
 
 @client.command()

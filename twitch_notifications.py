@@ -5,7 +5,7 @@ import time
 json_file_name="streamers.json"
 default_streamer_timeout=43200
 
-async def twitch_streamer_notifications(client):
+async def twitch_streamer_notifications():
     streamers_to_check=get_streamers_to_check()
     if len(streamers_to_check)==0:
         print("no streamers to check")
@@ -13,14 +13,14 @@ async def twitch_streamer_notifications(client):
 
     subs=read_json()
     messages=get_streams(streamers_to_check)
-
-    online_streamers=list(messages.keys())
-    for streamer in online_streamers:
-        message=messages[streamer]
-        send_to=subs[streamer]["subs"]
-        await dm(client,message,send_to)
+    notification_dict={}
+    for streamer,message in messages.items(): #{"message":["user_ids"],"message":["user_ids"]}
+        user_ids=subs[streamer]["subs"]
+        notification_dict[message]=user_ids
         timeout_streamer(streamer)
-         
+    return notification_dict
+
+
 def get_streamers_to_check():
     subs=read_json()
     streamers_to_check=[]
@@ -93,11 +93,12 @@ def write_to_json(to_write):
     with open(json_file_name,"w") as f:
         json.dump(to_write,f,indent=4)
 
+"""
 async def dm(client,message,send_to):
     for recipient in send_to:
         target= await client.fetch_user(recipient)
         await target.send(message)
-
+"""
 def get_correct_user_name(streamer):
     payload={
         "login":streamer
