@@ -93,12 +93,6 @@ def write_to_json(to_write):
     with open(json_file_name,"w") as f:
         json.dump(to_write,f,indent=4)
 
-"""
-async def dm(client,message,send_to):
-    for recipient in send_to:
-        target= await client.fetch_user(recipient)
-        await target.send(message)
-"""
 def get_correct_user_name(streamer):
     payload={
         "login":streamer
