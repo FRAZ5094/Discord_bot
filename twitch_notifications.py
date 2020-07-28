@@ -55,17 +55,19 @@ def get_header(expired=False):
             "grant_type":"client_credentials"}
 
         r=requests.post("https://id.twitch.tv/oauth2/token", data=payload)
+        if r.ok:
+            AuthData=json.loads(r.text)
 
-        AuthData=json.loads(r.text)
+            access_token=AuthData["access_token"]
 
-        access_token=AuthData["access_token"]
+            header={"client-id":client_id,"Authorization": f"Bearer {access_token}"}
 
-        header={"client-id":client_id,"Authorization": f"Bearer {access_token}"}
+            with open("header.json","w") as f:
+                json.dump(header,f,indent=4)
 
-        with open("header.json","w") as f:
-            json.dump(header,f,indent=4)
-
-        return header
+            return header
+        else:
+            print("problem getting token")
 
 def get_streams(channel_id_list):
 

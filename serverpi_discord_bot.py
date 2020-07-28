@@ -44,8 +44,7 @@ async def ping(ctx):
 async def streamer_live_check():
     print("doing loop")
     await twitch_streamer_notifications(client)
-    temp=os.popen("vcgencmd measure_temp").read()
-    print(temp)
+
 """
 @client.command()
 async def notifications(ctx):
