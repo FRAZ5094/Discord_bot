@@ -4,19 +4,9 @@ import os
 import time
 json_file_name="streamers.json"
 default_streamer_timeout=43200
-#145272316778119170
-"""
-subs={
-    "TimTheTatman":{"subs":[145272316778119170],"timeout_until":0},
-    "Faker":{"subs":[1],"timeout_until":0},
-    "HealthyGamer_GG":{"subs":[145272316778119170],"timeout_until":0},
-    "GMHikaru":{"subs":[145272316778119170],"timeout_until":0}
-}
-"""
 
 async def twitch_streamer_notifications(client):
     streamers_to_check=get_streamers_to_check()
-    print(f"streamers to check :{streamers_to_check}")
     if len(streamers_to_check)==0:
         print("no streamers to check")
         return
@@ -25,7 +15,6 @@ async def twitch_streamer_notifications(client):
     messages=get_streams(streamers_to_check)
 
     online_streamers=list(messages.keys())
-    #print(f"online streamers:{online_streamers}")
     for streamer in online_streamers:
         message=messages[streamer]
         send_to=subs[streamer]["subs"]
