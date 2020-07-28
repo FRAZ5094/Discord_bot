@@ -98,13 +98,13 @@ async def add_streamer(ctx,streamer):
                 subs[streamer]["subs"].append(user_id)
                 await ctx.send(f"Successfully subscribed to {streamer}")
                 write_to_json(subs)
-                sub_list(ctx)
+                await sub_list(ctx)
                 
         else:
             subs[streamer]={"subs": [user_id],"timeout_until": 0}
             await ctx.send(f"Successfully subscribed to {streamer}")
             write_to_json(subs)
-            sub_list(ctx)
+            await sub_list(ctx)
 
 @client.command()
 async def remove_streamer(ctx,streamer):
