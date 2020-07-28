@@ -3,7 +3,7 @@ from discord.ext import commands,tasks
 from secrets import discord_bot_token
 from twitch_notifications import *
 import os 
-
+from datetime import datetime
 client = commands.Bot(command_prefix="!")
 
 @client.event
@@ -38,6 +38,9 @@ async def ping(ctx):
 
 @tasks.loop(minutes=5)
 async def streamer_live_check():
+    now=datetime.now()
+    current_time=now.strftime("%H:%M")
+    print("Live check at:", current_time)
     messages=await twitch_streamer_notifications()
     for message,user_ids in messages.items():
         for user_id in user_ids:

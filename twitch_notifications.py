@@ -9,7 +9,7 @@ default_streamer_timeout=43200
 async def twitch_streamer_notifications():
     streamers_to_check=get_streamers_to_check()
     if len(streamers_to_check)==0:
-        print("no streamers to check")
+        #print("no streamers to check")
         return
 
     subs=read_json()
