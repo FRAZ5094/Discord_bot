@@ -8,7 +8,7 @@ client = commands.Bot(command_prefix="!")
 
 @client.event
 async def on_ready():
-    streamer_live_check.start()
+    #streamer_live_check.start()
     await client.change_presence(status=discord.Status.idle,activity=discord.Game("Fucking your mum"))
     print("serverpi_discord_bot online")
 
@@ -47,8 +47,23 @@ async def streamer_live_check():
 
 @client.command()
 async def check_online(ctx):
-    pass
+    user_id=ctx.author.id
+    subbed_list=get_subbed_list(user_id)
+    online_list=list(get_streams(subbed_list).keys())
+    offline_list=[]
+    for streamer in subbed_list:
+        if streamer not in online_list:
+            offline_list.append(streamer)
+    message=""
 
+    for streamer in online_list:
+        message+=f":white_check_mark: {streamer}\n"
+        #f"https://www.twitch.tv/{streamer.lower()}\n"
+
+
+    for streamer in offline_list:
+        message+=f":x: {streamer}\n"
+    await ctx.send(message)
 
 @client.command()
 async def channel(channel_id,message):
@@ -64,7 +79,9 @@ async def dm(user_id,message):
 async def sub_list(ctx):
     user_id=ctx.author.id
     subbed_list=get_subbed_list(user_id)
-    await ctx.send(subbed_list)
+    if len(subbed_list)==0:
+        await ctx.send("Your not subbed to anyone")
+    await ctx.send("Your subscribed list:\n   "+"\n   ".join(subbed_list))
 
 @client.command()
 async def add_streamer(ctx,streamer):

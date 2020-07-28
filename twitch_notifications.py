@@ -20,7 +20,6 @@ async def twitch_streamer_notifications():
         timeout_streamer(streamer)
     return notification_dict
 
-
 def get_streamers_to_check():
     subs=read_json()
     streamers_to_check=[]
@@ -122,12 +121,10 @@ def get_correct_user_name(streamer):
 def get_subbed_list(user_id):
     subs=read_json()
     user_subbed_list=[]
-    for streamer in list(subs.keys()):
+    for streamer in subs.keys():
         if user_id in subs[streamer]["subs"]:
             user_subbed_list.append(streamer)
-    if len(user_subbed_list)==0:
-        return "You're not subbed to any streamers"
-    return "Your subscribed list:\n   "+"\n   ".join(user_subbed_list)
+    return user_subbed_list
 
 def timeout_streamer(streamer):
     subs=read_json()
