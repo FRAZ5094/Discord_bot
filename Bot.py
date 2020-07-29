@@ -85,7 +85,7 @@ async def check_online(ctx):
     message=""
 
     for streamer in online_list:
-        message+=f":white_check_mark: {streamer}\n"
+        message+=f":white_check_mark: {streamer}--> <https://www.twitch.tv/{streamer}>\n"
 
     for streamer in offline_list:
         message+=f":x: {streamer}\n"
