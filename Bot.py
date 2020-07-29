@@ -6,10 +6,24 @@ import os
 from datetime import datetime
 client = commands.Bot(command_prefix="!")
 
+def get_settings():
+    with open("settings.json","r") as f:
+        return json.load(f)
+
+def get_setting_value(setting):
+    settings=get_settings()
+    return settings[setting]
+
+async def authorized(ctx):
+    if ctx.author.id in [145272316778119170]:
+        return True
+    else:
+        await ctx.send("You do not have permission access this command")
+
 @client.event
 async def on_ready():
     streamer_live_check.start()
-    await client.change_presence(status=discord.Status.idle,activity=discord.Game("Fucking your mum"))
+    await client.change_presence(status=discord.Status.online,activity=discord.Game(get_setting_value("status")))
     print("Bot online")
 
 @client.command()
@@ -36,7 +50,7 @@ async def on_command_error(ctx,error):
 async def ping(ctx):
     await ctx.send("{}ms".format(round(client.latency*1000)))
 
-@tasks.loop(minutes=5)
+@tasks.loop(minutes=get_setting_value("refresh-time"))
 async def streamer_live_check():
     now=datetime.now()
     current_time=now.strftime("%H:%M:%S")
@@ -58,7 +72,6 @@ async def streamer_live_check():
         for user_id in user_ids:
             await dm(user_id,message)
         timeout_streamer(streamer)
-        print(f"timed out {streamer}")
 
 @client.command()
 async def check_online(ctx):
@@ -129,10 +142,10 @@ async def remove_streamer(ctx,streamer):
             subs[streamer]["subs"].remove(user_id)
             await ctx.send(f"{streamer} removed from your subbed list")
             write_to_json(subs)
-            subbed_list=get_subbed_list(user_id)
-            await ctx.send(subbed_list)
+            await sub_list(ctx)
         else:
             await ctx.send(f"You are not subbed to {streamer}")
+            await sub_list(ctx)
 
     else:
         await ctx.send("invalid streamer name, this command is case sensitive")
@@ -141,6 +154,47 @@ async def remove_streamer(ctx,streamer):
 async def pi_temp(ctx):
         temp=os.popen("vcgencmd measure_temp").read()
         await ctx.send(f"pi {temp}")
+
+@client.command()
+async def settings(ctx):
+    settings=get_settings()
+    response=""
+    for setting,value in settings.items():
+        response+=f"{setting}: {value}\n"
+    await ctx.send(response)
+
+@client.command()
+@commands.check(authorized)
+async def change_setting(ctx,setting,value):
+    already_added=False
+    settings=get_settings()
+    old_value=settings[setting]
+    if setting=="refresh-time":
+        settings[setting]=int(value)
+        with open("settings.json","w") as f:
+            json.dump(settings,f,indent=4)
+        already_added=True
+        streamer_live_check.change_interval(minutes=float(value))
+        streamer_live_check.restart()
+    if setting=="status":
+        await client.change_presence(status=discord.Status.online,activity=discord.Game(value))
+
+    if not already_added:
+        settings[setting]=value
+        with open("settings.json","w") as f:
+            json.dump(settings,f,indent=4)
+    
+    await ctx.send(f"{setting}: {old_value}-->{value}")
+
+@client.command()
+async def next_refresh(ctx):
+    next_iter=int(streamer_live_check.next_iteration.timestamp())
+    now=int(datetime.now().timestamp())
+
+    delta_time=next_iter-now
+
+    await ctx.send(f"Next refresh is in {delta_time} seconds")
+
 
 client.run(discord_bot_token)
 
