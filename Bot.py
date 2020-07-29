@@ -26,7 +26,6 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online,activity=discord.Game(get_setting_value("status")))
     print("Bot online")
 
-
 @client.command()
 async def hello(ctx):
     await ctx.send("hello")
@@ -188,7 +187,7 @@ async def change_setting(ctx,setting,value):
         
         await ctx.send(f"{setting}: {old_value}-->{value}")
     else:
-        await ctx.send(f"setting: {setting} not found")
+        await ctx.send(f"setting: \"{setting}\" not found")
 
 @client.command()
 async def next_refresh(ctx):
