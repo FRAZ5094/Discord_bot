@@ -58,7 +58,7 @@ def get_streams(channel_id_list):
         for stream in data:
             user_name=stream["user_name"]
             title=stream["title"]
-            messages[user_name]=f"{user_name} is live!\nTitle: {title}\nLink: https://www.twitch.tv./{user_name}"
+            messages[user_name]=f"{user_name} is live!\nTitle: {title}\nLink: https://www.twitch.tv/{user_name}"
     else:  
         print("request error,getting new key")
         header=get_header(expired=True)
