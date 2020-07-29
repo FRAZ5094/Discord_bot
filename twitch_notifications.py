@@ -29,6 +29,7 @@ def get_header(expired=False):
             "grant_type":"client_credentials"}
 
         r=requests.post("https://id.twitch.tv/oauth2/token", data=payload)
+        print("got another token")
         if r.ok:
             AuthData=json.loads(r.text)
 
