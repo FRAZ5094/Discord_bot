@@ -168,24 +168,26 @@ async def settings(ctx):
 async def change_setting(ctx,setting,value):
     already_added=False
     settings=get_settings()
-    old_value=settings[setting]
-    if setting=="refresh-time":
-        settings[setting]=int(value)
-        with open("settings.json","w") as f:
-            json.dump(settings,f,indent=4)
-        already_added=True
-        streamer_live_check.change_interval(minutes=float(value))
-        streamer_live_check.restart()
-    if setting=="status":
-        await client.change_presence(status=discord.Status.online,activity=discord.Game(value))
+    if setting in settings.keys():
+        old_value=settings[setting]
+        if setting=="refresh-time":
+            settings[setting]=int(value)
+            with open("settings.json","w") as f:
+                json.dump(settings,f,indent=4)
+            already_added=True
+            streamer_live_check.change_interval(minutes=float(value))
+            streamer_live_check.restart()
+        if setting=="status":
+            await client.change_presence(status=discord.Status.online,activity=discord.Game(value))
 
-    if not already_added:
-        settings[setting]=value
-        with open("settings.json","w") as f:
-            json.dump(settings,f,indent=4)
-    
-    await ctx.send(f"{setting}: {old_value}-->{value}")
-
+        if not already_added:
+            settings[setting]=value
+            with open("settings.json","w") as f:
+                json.dump(settings,f,indent=4)
+        
+        await ctx.send(f"{setting}: {old_value}-->{value}")
+    else:
+        await ctx.send(f"setting: {setting} not found")
 @client.command()
 async def next_refresh(ctx):
     next_iter=int(streamer_live_check.next_iteration.timestamp())
