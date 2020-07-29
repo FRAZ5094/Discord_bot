@@ -6,21 +6,6 @@ import time
 json_file_name="streamers.json"
 default_streamer_timeout=43200
 
-async def twitch_streamer_notifications():
-    streamers_to_check=get_streamers_to_check()
-    if len(streamers_to_check)==0:
-        #print("no streamers to check")
-        return
-
-    subs=read_json()
-    messages=get_streams(streamers_to_check)
-    notification_dict={}
-    for streamer,message in messages.items():
-        user_ids=subs[streamer]["subs"]
-        notification_dict[message]=user_ids
-        timeout_streamer(streamer)
-    return notification_dict
-
 def get_streamers_to_check():
     subs=read_json()
     streamers_to_check=[]

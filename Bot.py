@@ -39,12 +39,26 @@ async def ping(ctx):
 @tasks.loop(minutes=5)
 async def streamer_live_check():
     now=datetime.now()
-    current_time=now.strftime("%H:%M")
+    current_time=now.strftime("%H:%M:%S")
     print("Live check at:", current_time)
-    messages=await twitch_streamer_notifications()
-    for message,user_ids in messages.items():
+    streamers_to_check=get_streamers_to_check()
+    if len(streamers_to_check)==0:
+        #print("no streamers to check")
+        return
+
+    subs=read_json()
+    messages=get_streams(streamers_to_check)
+    notification_dict={}
+    for streamer,message in messages.items():
+        user_ids=subs[streamer]["subs"]
+        notification_dict[message]=user_ids
+        timeout_streamer(streamer)
+
+    for message,user_ids in notification_dict.items():
         for user_id in user_ids:
             await dm(user_id,message)
+        timeout_streamer(streamer)
+        print(f"timed out {streamer}")
 
 @client.command()
 async def check_online(ctx):
