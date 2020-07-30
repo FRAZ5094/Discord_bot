@@ -101,7 +101,6 @@ async def check_online(ctx):
     for streamer in online_list:
         message+=f":white_check_mark: {streamer}--> <https://www.twitch.tv/{streamer}>\n"
     subs=read_json()
-    print("before generating messages")
     for streamer in offline_list:
         offline_time=subs[streamer]["offline-time"]
         if offline_time>=9999999999999:
@@ -110,9 +109,7 @@ async def check_online(ctx):
             mins=int(offline_time%60)
             offline_time/=60
             offline_time=int(offline_time)
-            print("before time_phrase")
             time_phrase=time_formatting(offline_time,mins)
-            print(time_phrase)
         message+=f":x: {streamer}--> last live: {time_phrase}\n"
     await ctx.send(message)
 
