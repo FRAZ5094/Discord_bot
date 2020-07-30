@@ -9,7 +9,7 @@ from datetime import datetime
 client = commands.Bot(command_prefix="!")
 
 
-async def authorized_bruh(ctx):
+async def authorized(ctx):
     if ctx.author.id in [145272316778119170]:
         return True
     else:
@@ -97,9 +97,17 @@ async def check_online(ctx):
     message=""
     for streamer in online_list:
         message+=f":white_check_mark: {streamer}--> <https://www.twitch.tv/{streamer}>\n"
-
+    subs=read_json()
     for streamer in offline_list:
-        message+=f":x: {streamer}\n"
+        offline_time=subs[streamer]["offline-time"]
+        if offline_time>=9999999999999:
+            offline_time="unknown"
+        else:
+            mins=int(offline_time%60)
+            offline_time/=60
+            offline_time=int(offline_time)
+            time_phrase=time_formatting(offline_time,mins)
+        message+=f":x: {streamer}--> last live: {time_phrase}\n"
     await ctx.send(message)
 
 @client.command()
@@ -176,7 +184,7 @@ async def settings(ctx):
     await ctx.send(response)
 
 @client.command()
-@commands.check(authorized_bruh)
+@commands.check(authorized)
 async def change_setting(ctx,setting,value):
     already_added=False
     settings=get_settings()

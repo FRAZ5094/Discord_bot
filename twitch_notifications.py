@@ -152,3 +152,26 @@ def check_offline_time(online_list,messages,maxofflinetime):
     write_to_json(subs)
 
     return messages
+
+def time_formatting(hours,mins):
+    if hours!=0:
+        if mins==0 and hours>1:
+            return f"{hours} hours ago"
+        elif mins==0 and hours==1:
+            return f"{hours} hour ago"
+        else:
+            if hours==1:
+                if mins==1:
+                    return f"{hours} hour and {mins} minute ago"
+                else: 
+                    return f"{hours} hour and {mins} minutes ago"
+            else:
+                if mins==1:
+                    return f"{hours} hours and {mins} minute ago"
+                else:
+                    return f"{hours} hours and {mins} minutes ago"
+    else:
+        if mins==1 or mins==0:
+            return f"{mins} minute ago"
+        else:
+            return f"{mins} minutes ago"
