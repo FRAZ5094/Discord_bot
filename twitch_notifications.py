@@ -4,7 +4,6 @@ import os
 import time
 
 json_file_name="streamers.json"
-default_streamer_timeout=43200
 
 def get_streamers_to_check():
     subs=read_json()
