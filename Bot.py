@@ -58,7 +58,7 @@ async def ping(ctx):
 @tasks.loop(minutes=get_setting_value("refresh-time"))
 async def streamer_live_check():
     now=datetime.now()
-    current_time=now.strftime("%H:%M:%S")
+    current_time=now.strftime("%H:%M")
     print("Live check at:", current_time)
     subs=read_json()
     streamers_to_check=list(subs.keys())
