@@ -4,6 +4,8 @@ from secrets import discord_bot_token
 from twitch_notifications import *
 import os 
 from datetime import datetime
+
+
 client = commands.Bot(command_prefix="!")
 
 

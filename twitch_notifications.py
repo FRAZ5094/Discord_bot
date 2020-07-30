@@ -76,8 +76,13 @@ def read_json():
         return {}
 
 def write_to_json(to_write):
+    new_subs={}
+    for key,item in to_write.items():
+        if len(item["subs"])>0:
+            new_subs[key]=item
+            
     with open(json_file_name,"w") as f:
-        json.dump(to_write,f,indent=4)
+        json.dump(new_subs,f,indent=4)
 
 def get_correct_user_name(streamer):
     payload={
