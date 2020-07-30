@@ -6,6 +6,13 @@ import os
 from datetime import datetime
 client = commands.Bot(command_prefix="!")
 
+
+async def authorized_bruh(ctx):
+    if ctx.author.id in [145272316778119171]:
+        return True
+    else:
+        return False
+
 def get_settings():
     with open("settings.json","r") as f:
         return json.load(f)
@@ -13,12 +20,6 @@ def get_settings():
 def get_setting_value(setting):
     settings=get_settings()
     return settings[setting]
-
-async def authorized(ctx):
-    if ctx.author.id in [145272316778119170]:
-        return True
-    else:
-        await ctx.send("You do not have permission access this command")
 
 @client.event
 async def on_ready():
@@ -45,7 +46,8 @@ async def clear_error(ctx,error):
 async def on_command_error(ctx,error):
     if isinstance(error,commands.CommandNotFound):
         await ctx.send("Command doesn't exist")
-
+    if isinstance(error,commands.CheckFailure):
+        await ctx.send("you dont have permission for this command")
 @client.command()
 async def ping(ctx):
     await ctx.send("{}ms".format(round(client.latency*1000)))
@@ -121,6 +123,7 @@ async def add_streamer(ctx,streamer):
         if streamer in all_streamers:
             if user_id in subs[streamer]["subs"]:
                 await ctx.send(f"You are already subscibed to {streamer}")
+                await sub_list(ctx)
             else:
                 subs[streamer]["subs"].append(user_id)
                 await ctx.send(f"Successfully subscribed to {streamer}")
@@ -164,7 +167,7 @@ async def settings(ctx):
     await ctx.send(response)
 
 @client.command()
-@commands.check(authorized)
+@commands.check(authorized_bruh)
 async def change_setting(ctx,setting,value):
     already_added=False
     settings=get_settings()
@@ -197,7 +200,6 @@ async def next_refresh(ctx):
     delta_time=next_iter-now
 
     await ctx.send(f"Next refresh is in {delta_time} seconds")
-
 
 client.run(discord_bot_token)
 
