@@ -1,5 +1,5 @@
 {
-    "refresh-time": 5,
-    "maxoffline-time": "60",
+    "refresh-time": 1,
+    "maxoffline-time": 30,
     "status": "bruh"
 }
