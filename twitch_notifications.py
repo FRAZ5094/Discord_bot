@@ -113,12 +113,6 @@ def get_subbed_list(user_id):
             user_subbed_list.append(streamer)
     return user_subbed_list
 
-def timeout_streamer(streamer):
-    subs=read_json()
-    epoch=int(time.time())
-    subs[streamer]["timeout_until"]=epoch+default_streamer_timeout
-    write_to_json(subs)
-
 def streamer_lists(online_streamer_data):
     online_list=[]
     for data in online_streamer_data:
