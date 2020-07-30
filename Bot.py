@@ -92,6 +92,9 @@ async def streamer_live_check():
 async def check_online(ctx):
     user_id=ctx.author.id
     subbed_list=get_subbed_list(user_id)
+    if len(subbed_list)==0:
+        await ctx.send("Your not subbed to anyone")
+        return 
     online_streamer_data=get_streams(subbed_list)
     online_list,offline_list=streamer_lists(online_streamer_data)
     message=""
@@ -219,5 +222,6 @@ async def next_refresh(ctx):
     delta_time=next_iter-now
 
     await ctx.send(f"Next refresh is in {delta_time} seconds")
+
 
 client.run(discord_bot_token)
