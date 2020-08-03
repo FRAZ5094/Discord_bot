@@ -71,8 +71,6 @@ async def streamer_live_check():
     #increment the offline streamers offline-time 
     increment_offline_time(offline_list,get_setting_value("refresh-time"))
 
-
-
     #sort data into dict: {"message":[list to send message to]}
     messages={}
     for stream in online_streamer_data:
